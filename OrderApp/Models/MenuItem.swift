@@ -15,7 +15,6 @@ struct MenuItem: Codable {
     var category: String
     var imageURL: URL
     
-    
     enum CodingKeys: String, CodingKey {
         case id
         case name
