@@ -72,7 +72,6 @@ class MenuTableViewController: UITableViewController {
     
     // MARK: - Segues
     
-    
     @IBSegueAction func showMenuItem(_ coder: NSCoder, sender: Any?) -> MenuItemDetailViewController? {
         guard let cell = sender as? UITableViewCell, let indexPath = tableView.indexPath(for: cell) else { return nil }
         
