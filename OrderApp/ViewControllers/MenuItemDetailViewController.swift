@@ -26,7 +26,7 @@ class MenuItemDetailViewController: UIViewController {
     @IBOutlet private var nameLabel: UILabel!
     @IBOutlet private var priceLabel: UILabel!
     @IBOutlet private var detailLabel: UILabel!
-    @IBOutlet weak var addToOrderButton: UIButton!
+    @IBOutlet private var addToOrderButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
