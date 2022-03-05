@@ -37,7 +37,6 @@ class CategoryTableViewController: UITableViewController {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    
     func configureCell(_ cell: UITableViewCell, forCategoryAt indexPath: IndexPath) {
         let category = categories[indexPath.row]
         var content = cell.defaultContentConfiguration()

@@ -21,8 +21,11 @@ class MenuTableViewController: UITableViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    var imageLoadTasks: [IndexPath: Task<Void, Never>] = [:]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         title = category.capitalized
         
         Task.init {
@@ -34,6 +37,12 @@ class MenuTableViewController: UITableViewController {
                 displayError(error, title: "Failed to fetch menu items for \(self.category)")
             }
         }
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        imageLoadTasks.forEach { key, value in value.cancel() }
     }
     
     func updateUI(with menuItems: [MenuItem]) {
@@ -49,15 +58,28 @@ class MenuTableViewController: UITableViewController {
         self.present(alertController, animated: true, completion: nil)
     }
     
-    func configureCell(_ cell: UITableViewCell, forCategoryAt indexPath: IndexPath) {
+    func configure(_ cell: UITableViewCell, forItemAt indexPath: IndexPath) {
+        guard let cell = cell as? MenuItemCell else { return }
+        
         let menuItem = menuItems[indexPath.row]
-        var content = cell.defaultContentConfiguration()
-        content.text = menuItem.name
-        content.secondaryText = menuItem.price.formatted(.currency(code: "usd"))
-        cell.contentConfiguration = content
+        
+        cell.itemName = menuItem.name
+        cell.price = menuItem.price
+        cell.image = nil
+        
+        imageLoadTasks[indexPath] = Task.init {
+            if let image = try? await
+                MenuController.shared.fetchImage(from: menuItem.imageURL) {
+                if let currentIndexPath = self.tableView.indexPath(for: cell),
+                   currentIndexPath == indexPath {
+                    cell.image = image
+                }
+            }
+            imageLoadTasks[indexPath] = nil
+        }
     }
     
-    // MARK: - Table view data source
+    // MARK: - Table view data source and Delegate
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return menuItems.count
@@ -65,9 +87,13 @@ class MenuTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MenuItem", for: indexPath)
-        configureCell(cell, forCategoryAt: indexPath)
+        configure(cell, forItemAt: indexPath)
         
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        imageLoadTasks[indexPath]?.cancel()
     }
     
     // MARK: - Segues

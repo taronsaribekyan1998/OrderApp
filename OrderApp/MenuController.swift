@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class MenuController {
     static let shared = MenuController()
@@ -19,6 +20,20 @@ class MenuController {
     }
     
     let baseURL = URL(string: "http://localhost:8080/")!
+    
+    func fetchImage(from url: URL) async throws -> UIImage {
+        let (data, response) = try await URLSession.shared.data(from: url)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw MenuControllerError.imageDataMissing
+        }
+        
+        guard let image = UIImage(data: data) else {
+            throw MenuControllerError.imageDataMissing
+        }
+        
+        return image
+    }
     
     func fetchCategories() async throws -> [String] {
         let categoriesURL = baseURL.appendingPathComponent("categories")
@@ -61,7 +76,7 @@ class MenuController {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let menuIDsDict = [menuIDs: menuIDs]
+        let menuIDsDict = ["menuIds": menuIDs]
         let jsonEncoder = JSONEncoder()
         let jsonData = try? jsonEncoder.encode(menuIDsDict)
         request.httpBody = jsonData
@@ -82,6 +97,7 @@ class MenuController {
         case categoriesNotFound
         case menuItemsNotFound
         case orderRequestFailed
+        case imageDataMissing
     }
     
     typealias MinutesToPrepare = Int
