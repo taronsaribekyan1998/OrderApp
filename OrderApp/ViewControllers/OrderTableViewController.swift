@@ -30,9 +30,7 @@ class OrderTableViewController: UITableViewController {
         let formattedTotal = orderTotal.formatted(.currency(code: "usd"))
         
         let alertController = UIAlertController(title: "Confirm Order", message: "You're about to submit your order with a total of \(formattedTotal)", preferredStyle: .actionSheet)
-        alertController.addAction(UIAlertAction(title: "Submit", style: .default, handler: { _ in
-            self.uploadOrder()
-        }))
+        alertController.addAction(UIAlertAction(title: "Submit", style: .default) { _ in self.uploadOrder() })
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         
         present(alertController, animated: true)
@@ -41,7 +39,7 @@ class OrderTableViewController: UITableViewController {
     func uploadOrder() {
         let menuIDs = MenuController.shared.order.menuItems.map { $0.id }
         
-        Task.init {
+        Task {
             do {
                 let minutesToPrepare = try await MenuController.shared.submitOrder(forMenuIDs: menuIDs)
                 minutesToPrepareOrder = minutesToPrepare
@@ -68,7 +66,7 @@ class OrderTableViewController: UITableViewController {
         cell.price = menuItem.price
         cell.image = nil
         
-        Task.init {
+        Task {
             if let image = try? await
                 MenuController.shared.fetchImage(from: menuItem.imageURL) {
                 if let currentIndexPath = self.tableView.indexPath(for: cell),

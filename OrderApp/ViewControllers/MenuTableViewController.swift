@@ -28,7 +28,7 @@ class MenuTableViewController: UITableViewController {
         
         title = category.capitalized
         
-        Task.init {
+        Task {
             do {
                 let menuItems = try await MenuController.shared.fetchMenuItems(forCategory: category)
                 updateUI(with: menuItems)
@@ -67,7 +67,7 @@ class MenuTableViewController: UITableViewController {
         cell.price = menuItem.price
         cell.image = nil
         
-        imageLoadTasks[indexPath] = Task.init {
+        imageLoadTasks[indexPath] = Task {
             if let image = try? await
                 MenuController.shared.fetchImage(from: menuItem.imageURL) {
                 if let currentIndexPath = self.tableView.indexPath(for: cell),
