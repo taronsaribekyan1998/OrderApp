@@ -14,7 +14,7 @@ class CategoryTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        Task.init {
+        Task {
             do {
                 let categories = try await MenuController.shared.fetchCategories()
                 updateUI(with: categories)
@@ -36,7 +36,6 @@ class CategoryTableViewController: UITableViewController {
         alertController.addAction(UIAlertAction(title: "Dismiss", style: .default, handler: nil))
         self.present(alertController, animated: true, completion: nil)
     }
-    
     
     func configureCell(_ cell: UITableViewCell, forCategoryAt indexPath: IndexPath) {
         let category = categories[indexPath.row]
