@@ -34,6 +34,12 @@ class MenuItemDetailViewController: UIViewController {
         updateUI()
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        MenuController.shared.updateUserActivity(with: .menuItemDetail(menuItem))
+    }
+    
     @IBAction func orderButtonTapped(_ sender: UIButton) {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.1, options: []) {
             self.addToOrderButton.transform =

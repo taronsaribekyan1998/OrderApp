@@ -21,6 +21,12 @@ class OrderTableViewController: UITableViewController {
         )
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        MenuController.shared.updateUserActivity(with: .order)
+    }
+    
     @IBAction func submitTapped(_ sender: Any) {
         let orderTotal = MenuController.shared.order.menuItems.reduce(0.0) {
             (result, menuItem) -> Double in

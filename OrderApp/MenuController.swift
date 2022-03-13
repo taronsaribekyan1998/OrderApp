@@ -13,13 +13,28 @@ class MenuController {
     
     static let orderUpdatedNotification = Notification.Name("MenuController.orderUpdated")
     
+    var userActivity = NSUserActivity(activityType: "com.example.OrderApp.order")
+    
     var order = Order() {
         didSet {
             NotificationCenter.default.post(name: MenuController.orderUpdatedNotification, object: nil)
+            userActivity.order = order
         }
     }
     
     let baseURL = URL(string: "http://localhost:8080/")!
+    
+    func updateUserActivity(with controller: StateRestorationController) {
+        switch controller {
+        case .menu(let category):
+            userActivity.menuCategory = category
+        case .menuItemDetail(let menuItem):
+            userActivity.menuItem = menuItem
+        case .order, .categories:
+            break
+        }
+        userActivity.controllerIdentifier = controller.identifier
+    }
     
     func fetchImage(from url: URL) async throws -> UIImage {
         let (data, response) = try await URLSession.shared.data(from: url)
